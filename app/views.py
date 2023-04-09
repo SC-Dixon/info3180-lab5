@@ -8,6 +8,7 @@ This file creates your application.
 from app import app, db
 from flask import render_template, request, jsonify, send_file, redirect, url_for, flash, session, abort, send_from_directory
 from werkzeug.utils import secure_filename
+from flask_wtf.csrf import generate_csrf
 import datetime
 from app.models import Movies
 from app.forms import MovieForm
@@ -39,7 +40,7 @@ def movies():
             if poster and (postername != "" and postername != " "):
                 poster.save(os.path.join(app.config['UPLOAD_FOLDER'], postername))
 
-                newmovie = Movies((title, description, postername, created_at))
+                newmovie = Movies(title, description, postername, created_at)
                 db.session.add(newmovie)
                 db.session.commit()
                 
@@ -50,12 +51,16 @@ def movies():
                     "description": description
                 }
                 return jsonify(response)
+            
         ferrors ={"errors": form_errors(form) }  
         return jsonify(ferrors)
     
     return jsonify({'message': 'This is not an accepted request'})
 
 
+@app.route('/api/v1/csrf-token', methods=['GET'])
+def get_csrf():
+    return jsonify({'csrf_token': generate_csrf()})
 
 ###
 # The functions below should be applicable to all Flask apps.
