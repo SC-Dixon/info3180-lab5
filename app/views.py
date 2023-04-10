@@ -27,35 +27,33 @@ def index():
 @app.route('/api/v1/movies', methods=['POST'])
 def movies():
     
-    if request.method == "POST":
-        form =MovieForm()
+    form = MovieForm()
 
-        if form.validate_on_submit():
-            poster = form.poster.data
-            postername = secure_filename(poster.filename)
-            title = form.title.data
-            description = form.description.data
-            created_at = datetime.datetime.now()
+    if form.validate_on_submit():
+        poster = form.poster.data
+        postername = secure_filename(poster.filename)
+        title = form.title.data
+        description = form.description.data
+        created_at = datetime.datetime.now()
 
-            if poster and (postername != "" and postername != " "):
-                poster.save(os.path.join(app.config['UPLOAD_FOLDER'], postername))
+        poster.save(os.path.join(app.config['UPLOAD_FOLDER'], postername))
 
-                newmovie = Movies(title, description, postername, created_at)
-                db.session.add(newmovie)
-                db.session.commit()
-                
-                response= {
-                    "message": "Movie Successfully added",
-                    "title": title,
-                    "poster": postername,
-                    "description": description
-                }
-                return jsonify(response)
-            
-        ferrors ={"errors": form_errors(form) }  
-        return jsonify(ferrors)
+        newmovie = Movies(title, description, postername, created_at)
+        db.session.add(newmovie)
+        db.session.commit()
+        
+        
+        return jsonify({
+            "message": "Movie Successfully added",
+            "title": newmovie.title,
+            "poster": newmovie.poster,
+            "description": newmovie.description
+        }),200
+         
+    return jsonify({
+        "errors": form_errors(form) 
+        }),400
     
-    return jsonify({'message': 'This is not an accepted request'})
 
 
 @app.route('/api/v1/csrf-token', methods=['GET'])

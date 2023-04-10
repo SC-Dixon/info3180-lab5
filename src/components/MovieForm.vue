@@ -9,12 +9,12 @@
         
         <div class="form-group col-md-5 pb-3">
             <label for="description">Description <span class="text-danger">(Required)</span></label>
-            <textarea class="form-control" id="description" rows="3" name="description"></textarea>
+            <textarea  class="form-control" id="description" rows="3" name="description" v-model="text"></textarea>
         </div>
 
         <div class="form-group col-md-5 pb-3">
             <label for="photo">Poster Upload <span class="text-danger">(Required)</span></label><br>
-            <input type="file" class="form-control-file" id="poster"  name="poster" />
+            <input type="file" class="form-control" accept="image/png, image/jpeg, image/jpg" id="poster"  name="poster" />
         </div>
 
         <div class="form-group" id="fbutton">
@@ -32,31 +32,18 @@ onMounted(() => {
 });
 
 
-
-    function getCsrfToken() 
-    {
-
-        fetch('/api/v1/csrf-token')
-        .then((response) => response.json())
-        .then((data) => {
-            console.log(data);
-            csrf_token.value = data.csrf_token;
-        })
-    }
-
     function saveMovie()
     {
         let movieForm = document.getElementById('movieForm');
         let form_data = new FormData(movieForm);
 
-        fetch("/api/v1/movies", 
-        {
-            method: 'POST',
-            body: form_data,
-            headers: {
-                'X-CSRFToken': csrf_token.value
-            }
-        })
+        fetch("/api/v1/movies", {
+        method: 'POST',
+        body: form_data,
+        headers: {
+            'X-CSRFToken': csrf_token.value
+        }
+    })
         .then((response)=>{
             return response.json();
         })
@@ -67,5 +54,19 @@ onMounted(() => {
         .catch((error)=>{
             console.log(error);
         });
+
+        
+    }
+
+    function getCsrfToken() {
+        fetch('/api/v1/csrf-token')
+        .then((response) => response.json())
+        .then((data) => {
+            console.log(data);
+            csrf_token.value = data.csrf_token;
+        })
     }
 </script>
+
+
+
