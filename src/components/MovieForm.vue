@@ -1,15 +1,21 @@
 <template>
-     <span id="msg" class=" form-control alert" >
-     </span>
+    <div v-if="errorMsg" class="alert alert-danger">
+        <ul>
+            <li v-for="error in errorMsg">{{ error }}</li>
+        </ul>
+    </div>
+
+    <div v-if="successMsg" class="alert alert-success">{{ successMsg }}</div>
+
     <form @submit.prevent="saveMovie" method="POST" id="movieForm" >
-        <div class="form-group col-md-5 pb-3">
+        <div class="form-group col-md-7 pb-3">
             <label for="title">Movie Title<span class="text-danger"> (Required)</span></label>
             <input type="text" class="form-control" id="title"  name="title" />
         </div>
         
-        <div class="form-group col-md-5 pb-3">
+        <div class="form-group col-md-7 pb-3">
             <label for="description">Description <span class="text-danger">(Required)</span></label>
-            <textarea  class="form-control" id="description" rows="3" name="description" v-model="text"></textarea>
+            <textarea  class="form-control" id="description" rows="5" name="description" v-model="text"></textarea>
         </div>
 
         <div class="form-group col-md-5 pb-3">
@@ -26,6 +32,8 @@
 <script setup>
 import { ref, onMounted } from "vue";
 let csrf_token = ref("");
+let errorMsg = ref("");
+let successMsg = ref("");
 
 onMounted(() => {
  getCsrfToken();
@@ -50,6 +58,12 @@ onMounted(() => {
         .then((data)=>{
             // display a success message
             console.log(data);
+            if ("errors" in data){
+                errorMsg.value = data.errors;
+            } else {
+                successMsg.value = data.message;
+                resetFormFields();
+            }
         })
         .catch((error)=>{
             console.log(error);
@@ -66,6 +80,13 @@ onMounted(() => {
             csrf_token.value = data.csrf_token;
         })
     }
+
+    function resetFormFields(){
+    errorMsg.value = "";
+    title.value = "";
+    description.value = "";
+    poster.value = "";
+}
 </script>
 
 

@@ -60,6 +60,29 @@ def movies():
 def get_csrf():
     return jsonify({'csrf_token': generate_csrf()})
 
+
+@app.route('/api/v1/movies', methods=['GET'])
+def getmovies():
+    movies = Movies.query.all()
+    print(movies)
+    moviesList = []
+
+    for movie in movies:
+        movieInfo = {
+            'id': movie.id,
+            'title': movie.title,
+            'description': movie.description,
+            'poster': url_for('get_image', filename=movie.poster)
+        }
+        moviesList.append(movieInfo)
+    print(moviesList)
+    return jsonify({'movies' : moviesList})
+
+@app.route("/api/v1/posters/<filename>")
+def get_image(filename):
+    return send_from_directory(os.path.join(os.getcwd(),app.config['UPLOAD_FOLDER']),filename)
+
+
 ###
 # The functions below should be applicable to all Flask apps.
 ###
