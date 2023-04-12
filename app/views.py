@@ -62,7 +62,7 @@ def get_csrf():
 
 
 @app.route('/api/v1/movies', methods=['GET'])
-def getmovies():
+def add_movies():
     movies = Movies.query.all()
     print(movies)
     moviesList = []
